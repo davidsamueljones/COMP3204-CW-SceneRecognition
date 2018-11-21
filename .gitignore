@@ -20,3 +20,5 @@
 # other
 .DS_Store
 *.zip
+
+!src/main/resources/*.zip
