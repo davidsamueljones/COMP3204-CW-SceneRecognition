@@ -15,7 +15,7 @@ import org.openimaj.ml.clustering.FloatCentroidsResult;
 import org.openimaj.ml.clustering.assignment.HardAssigner;
 import org.openimaj.ml.clustering.kmeans.FloatKMeans;
 import org.openimaj.util.pair.IntFloatPair;
-import uk.ac.soton.ecs.dsjrtc.features.TinyImage;
+import uk.ac.soton.ecs.dsjrtc.features.TinyImageFeatureExtractor;
 import uk.ac.soton.ecs.dsjrtc.lib.TestingUtilities;
 
 /**
@@ -73,7 +73,7 @@ public class ClassifierTest {
     int i = 0;
     for (Entry<String, ListDataset<FImage>> group : training.entrySet()) {
       for (final FImage img : group.getValue()) {
-        data[i] = TinyImage.makeTinyImage(img, d);
+        data[i] = TinyImageFeatureExtractor.makeTinyImage(img, d);
         i++;
       }
     }
@@ -91,7 +91,7 @@ public class ClassifierTest {
     }
     for (Entry<String, ListDataset<FImage>> group : training.entrySet()) {
       for (final FImage img : group.getValue()) {
-        float[] imgTiny = TinyImage.makeTinyImage(img, d);
+        float[] imgTiny = TinyImageFeatureExtractor.makeTinyImage(img, d);
         int centroid = assigner.assign(imgTiny);
         Map<String, Integer> mappings = assignments.get(centroid);
         Integer groupCount = mappings.get(group.getKey());
@@ -108,7 +108,7 @@ public class ClassifierTest {
     int wrong = 0;
     for (Entry<String, ListDataset<FImage>> group : testing.entrySet()) {
       for (final FImage img : group.getValue()) {
-        float[] imgTiny = TinyImage.makeTinyImage(img, d);
+        float[] imgTiny = TinyImageFeatureExtractor.makeTinyImage(img, d);
         int c = assigner.assign(imgTiny);
         Map<String, Integer> mappings = assignments.get(c);
         String bestGroup = null;

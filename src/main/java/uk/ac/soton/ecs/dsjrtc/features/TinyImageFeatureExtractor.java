@@ -3,8 +3,27 @@ package uk.ac.soton.ecs.dsjrtc.features;
 import java.awt.Dimension;
 import org.openimaj.image.FImage;
 import org.openimaj.image.processing.resize.ResizeProcessor;
+import org.openimaj.util.array.ArrayUtils;
+import org.openimaj.feature.DoubleFV;
+import org.openimaj.feature.FeatureExtractor;
 
-public class TinyImage {
+public class TinyImageFeatureExtractor implements FeatureExtractor<DoubleFV, FImage> {
+  public static final Dimension DEFAULT_SCALE = new Dimension(4, 4);
+  private final Dimension scale;
+
+  public TinyImageFeatureExtractor() {
+    this(DEFAULT_SCALE);
+  }
+
+  public TinyImageFeatureExtractor(Dimension scale) {
+    this.scale = scale;
+  }
+
+  @Override
+  public DoubleFV extractFeature(FImage img) {
+    float[] feature = makeTinyImage(img, scale);
+    return new DoubleFV(ArrayUtils.convertToDouble(feature));
+  }
 
   public static float[] makeTinyImage(FImage img, Dimension scale) {
     // Crop to square around the centre
@@ -38,4 +57,6 @@ public class TinyImage {
     final float[] packed = img.getFloatPixelVector();
     return packed;
   }
+
+
 }
