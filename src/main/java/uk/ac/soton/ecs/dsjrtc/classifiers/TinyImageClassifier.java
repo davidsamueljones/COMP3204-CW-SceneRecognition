@@ -17,7 +17,7 @@ import org.openimaj.util.pair.IntFloatPair;
 import uk.ac.soton.ecs.dsjrtc.features.TinyImageFeatureExtractor;
 
 public class TinyImageClassifier implements TrainableClassifier<String, FImage> {
-  public static final int DEFAULT_NN_K = 50;
+  public static final int DEFAULT_NN_K = 20;
   public static final boolean DEFAULT_NORMALISE = true;
   public static final Dimension DEFAULT_SCALE = TinyImageFeatureExtractor.DEFAULT_SCALE;
 
@@ -45,6 +45,7 @@ public class TinyImageClassifier implements TrainableClassifier<String, FImage> 
     float[] feature = fe.extractFeature(img).values;
     List<IntFloatPair> neighbours = knn.searchKNN(feature, nNeighbours);
     Map<Integer, Integer> results = new HashMap<>();
+    int foundNeighbours = 0;
     for (IntFloatPair neighbour : neighbours) {
       int group = assignments[neighbour.first];
       Integer groupCount = results.get(group);
@@ -52,20 +53,16 @@ public class TinyImageClassifier implements TrainableClassifier<String, FImage> 
         groupCount = 0;
       }
       results.put(group, groupCount + 1);
+      foundNeighbours++;
       // !!! TODO: Should we have a distance threshold that ignores far away neighbours?
     }
-    
+
     // Check results
     BasicClassificationResult<String> classification = new BasicClassificationResult<>();
-    String bestGroup = null;
-    int bestVal = 0;
     for (Entry<Integer, Integer> entry : results.entrySet()) {
-      if (entry.getValue() > bestVal) {
-        bestGroup = groups[entry.getKey()];
-        bestVal = entry.getValue();
-      }
+      classification.put(groups[entry.getKey()], entry.getValue() / (double) foundNeighbours);
     }
-    classification.put(bestGroup, bestVal / (double) nNeighbours);
+
     return classification;
   }
 
