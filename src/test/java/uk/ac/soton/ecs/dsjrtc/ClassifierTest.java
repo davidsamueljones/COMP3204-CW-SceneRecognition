@@ -16,6 +16,7 @@ import org.openimaj.experiment.evaluation.classification.ClassificationResult;
 import org.openimaj.image.FImage;
 import org.openimaj.image.ImageUtilities;
 import uk.ac.soton.ecs.dsjrtc.classifiers.TinyImageClassifier;
+import uk.ac.soton.ecs.dsjrtc.lib.Debugger;
 import uk.ac.soton.ecs.dsjrtc.lib.TestingUtilities;
 
 /**
@@ -74,21 +75,24 @@ public class ClassifierTest {
     for (Entry<String, ListDataset<FImage>> group : testing.entrySet()) {
       for (FImage img : group.getValue()) {
         ClassificationResult<String> result = tic.classify(img);
-        String predicted = getClassification(result);
-        if (predicted.equals(group.getKey())) {
+        Pair<String, Double> predicted = getClassification(result);
+        if (group.getKey().equals(predicted.getKey())) {
           correct++;
         } else {
           incorrect++;
         }
+        Debugger.println(String.format("A: %15s   P: %15s  C: %.02f", group.getKey(),
+            predicted.getKey(), predicted.getValue()));
       }
     }
     System.out.println(String.format("Correct: %d,  Incorrect: %d", correct, incorrect));
   }
 
-  private static String getClassification(ClassificationResult<String> classification) {
+  private static Pair<String, Double> getClassification(
+      ClassificationResult<String> classification) {
     List<Pair<String, Double>> predictions = getPredictions(classification);
     if (!predictions.isEmpty()) {
-      return predictions.get(0).getKey();
+      return predictions.get(0);
     }
     return null;
   }
@@ -103,7 +107,7 @@ public class ClassifierTest {
     Collections.sort(predictions, new Comparator<Pair<String, Double>>() {
       @Override
       public int compare(Pair<String, Double> o1, Pair<String, Double> o2) {
-        return o1.getValue().compareTo(o2.getValue());
+        return o2.getValue().compareTo(o1.getValue());
       }
     });
     return predictions;
