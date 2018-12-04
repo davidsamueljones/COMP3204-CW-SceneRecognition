@@ -1,11 +1,6 @@
 package uk.ac.soton.ecs.dsjrtc;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
 import java.util.Map.Entry;
-import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 import org.openimaj.data.dataset.GroupedDataset;
 import org.openimaj.data.dataset.ListDataset;
@@ -16,6 +11,7 @@ import org.openimaj.experiment.evaluation.classification.ClassificationResult;
 import org.openimaj.image.FImage;
 import org.openimaj.image.ImageUtilities;
 import uk.ac.soton.ecs.dsjrtc.classifiers.TinyImageClassifier;
+import uk.ac.soton.ecs.dsjrtc.lib.ClassifierUtilities;
 import uk.ac.soton.ecs.dsjrtc.lib.Debugger;
 import uk.ac.soton.ecs.dsjrtc.lib.TestingUtilities;
 
@@ -75,7 +71,7 @@ public class ClassifierTest {
     for (Entry<String, ListDataset<FImage>> group : testing.entrySet()) {
       for (FImage img : group.getValue()) {
         ClassificationResult<String> result = tic.classify(img);
-        Pair<String, Double> predicted = getClassification(result);
+        Pair<String, Double> predicted = ClassifierUtilities.getClassification(result);
         if (group.getKey().equals(predicted.getKey())) {
           correct++;
         } else {
@@ -86,31 +82,6 @@ public class ClassifierTest {
       }
     }
     System.out.println(String.format("Correct: %d,  Incorrect: %d", correct, incorrect));
-  }
-
-  private static Pair<String, Double> getClassification(
-      ClassificationResult<String> classification) {
-    List<Pair<String, Double>> predictions = getPredictions(classification);
-    if (!predictions.isEmpty()) {
-      return predictions.get(0);
-    }
-    return null;
-  }
-
-  private static List<Pair<String, Double>> getPredictions(
-      ClassificationResult<String> classification) {
-    List<Pair<String, Double>> predictions = new ArrayList<>();
-    for (String group : classification.getPredictedClasses()) {
-      predictions.add(new ImmutablePair<>(group, classification.getConfidence(group)));
-    }
-
-    Collections.sort(predictions, new Comparator<Pair<String, Double>>() {
-      @Override
-      public int compare(Pair<String, Double> o1, Pair<String, Double> o2) {
-        return o2.getValue().compareTo(o1.getValue());
-      }
-    });
-    return predictions;
   }
 
 
