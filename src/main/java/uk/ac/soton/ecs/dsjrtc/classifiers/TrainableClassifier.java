@@ -16,10 +16,18 @@ import org.openimaj.experiment.evaluation.classification.Classifier;
 public interface TrainableClassifier<C, O> extends Classifier<C, O> {
 
   /**
-   * Train the classifier with the provided training set.
+   * Train the classifier with the provided training set, updating if the classifier has already
+   * been trained.
    * 
-   * @param training A set of instances grouped under their respective classes. 
+   * @param trainingSet A set of instances grouped under their respective classes.
    */
   void train(GroupedDataset<C, ListDataset<O>, O> trainingSet);
+
+  /**
+   * Reset the classifier if trained and train with the provided training set.
+   * 
+   * @param trainingSet A set of instances grouped under their respective classes.
+   */
+  void retrain(GroupedDataset<C, ListDataset<O>, O> trainingSet);
 
 }

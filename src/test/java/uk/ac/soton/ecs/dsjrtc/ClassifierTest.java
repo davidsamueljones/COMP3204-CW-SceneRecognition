@@ -1,5 +1,6 @@
 package uk.ac.soton.ecs.dsjrtc;
 
+import java.awt.Dimension;
 import java.util.Map.Entry;
 import org.apache.commons.lang3.tuple.Pair;
 import org.openimaj.data.dataset.GroupedDataset;
@@ -11,6 +12,7 @@ import org.openimaj.experiment.evaluation.classification.ClassificationResult;
 import org.openimaj.image.FImage;
 import org.openimaj.image.ImageUtilities;
 import uk.ac.soton.ecs.dsjrtc.classifiers.TinyImageClassifier;
+import uk.ac.soton.ecs.dsjrtc.features.TinyImageFeatureExtractor;
 import uk.ac.soton.ecs.dsjrtc.lib.ClassifierUtilities;
 import uk.ac.soton.ecs.dsjrtc.lib.Debugger;
 import uk.ac.soton.ecs.dsjrtc.lib.TestingUtilities;
@@ -63,8 +65,8 @@ public class ClassifierTest {
     GroupedDataset<String, ListDataset<FImage>, FImage> training = splitData.getTrainingDataset();
     GroupedDataset<String, ListDataset<FImage>, FImage> testing = splitData.getTestDataset();
 
-
-    TinyImageClassifier tic = new TinyImageClassifier();
+    TinyImageFeatureExtractor tife = new TinyImageFeatureExtractor(new Dimension(16, 16), true);
+    TinyImageClassifier tic = new TinyImageClassifier(20, tife);
     tic.train(training);
     int correct = 0;
     int incorrect = 0;
