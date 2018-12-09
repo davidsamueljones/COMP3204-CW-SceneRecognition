@@ -11,6 +11,7 @@ import org.openimaj.experiment.dataset.split.GroupedRandomSplitter;
 import org.openimaj.experiment.evaluation.classification.ClassificationResult;
 import org.openimaj.image.FImage;
 import org.openimaj.image.ImageUtilities;
+import uk.ac.soton.ecs.dsjrtc.classifiers.RandomClassifier;
 import uk.ac.soton.ecs.dsjrtc.classifiers.TinyImageClassifier;
 import uk.ac.soton.ecs.dsjrtc.features.TinyImageFeatureExtractor;
 import uk.ac.soton.ecs.dsjrtc.lib.ClassifierUtilities;
@@ -67,7 +68,9 @@ public class ClassifierTest {
 
     TinyImageFeatureExtractor tife = new TinyImageFeatureExtractor(new Dimension(16, 16), true);
     TinyImageClassifier tic = new TinyImageClassifier(20, tife);
+    // RandomClassifier tic = new RandomClassifier();
     tic.train(training);
+
     int correct = 0;
     int incorrect = 0;
     for (Entry<String, ListDataset<FImage>> group : testing.entrySet()) {
@@ -83,7 +86,8 @@ public class ClassifierTest {
             predicted.getKey(), predicted.getValue()));
       }
     }
-    System.out.println(String.format("Correct: %d,  Incorrect: %d", correct, incorrect));
+    System.out.println(String.format("Correct: %d,  Incorrect: %d, Percentage: %.2f%%", correct,
+        incorrect, 100 * correct / (double) incorrect));
   }
 
 
