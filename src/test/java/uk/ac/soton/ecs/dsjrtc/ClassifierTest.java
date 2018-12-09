@@ -1,21 +1,20 @@
 package uk.ac.soton.ecs.dsjrtc;
 
 import java.awt.Dimension;
-import java.util.Map.Entry;
-import org.apache.commons.lang3.tuple.Pair;
 import org.openimaj.data.dataset.GroupedDataset;
 import org.openimaj.data.dataset.ListDataset;
 import org.openimaj.data.dataset.VFSGroupDataset;
 import org.openimaj.data.dataset.VFSListDataset;
 import org.openimaj.experiment.dataset.split.GroupedRandomSplitter;
-import org.openimaj.experiment.evaluation.classification.ClassificationResult;
+import org.openimaj.experiment.evaluation.classification.ClassificationEvaluator;
+import org.openimaj.experiment.evaluation.classification.Classifier;
+import org.openimaj.experiment.evaluation.classification.analysers.confusionmatrix.CMAnalyser;
+import org.openimaj.experiment.evaluation.classification.analysers.confusionmatrix.CMResult;
 import org.openimaj.image.FImage;
 import org.openimaj.image.ImageUtilities;
 import uk.ac.soton.ecs.dsjrtc.classifiers.RandomClassifier;
 import uk.ac.soton.ecs.dsjrtc.classifiers.TinyImageClassifier;
 import uk.ac.soton.ecs.dsjrtc.features.TinyImageFeatureExtractor;
-import uk.ac.soton.ecs.dsjrtc.lib.ClassifierUtilities;
-import uk.ac.soton.ecs.dsjrtc.lib.Debugger;
 import uk.ac.soton.ecs.dsjrtc.lib.TestingUtilities;
 
 /**
@@ -52,44 +51,42 @@ public class ClassifierTest {
     }
 
     // After this point both datasets must be loaded
-    System.out.println("Training: " + dsTraining.numInstances());
-    System.out.println("Testing: " + dsTesting.numInstances());
+    System.out.println("[Datasets]");
+    System.out.println("Training (known classes): " + dsTraining.numInstances());
+    System.out.println("Testing (unknown classes): " + dsTesting.numInstances());
 
+    System.out.println("\n[Training]");
     // As we only know values for the training set use this for both training and testing
-    // !!! Hardcoded because I'm hard
     int nTrain = 100 / 4 * 3;
     int nTest = 100 - nTrain;
     System.out.println(String.format(
         "Using %d samples for training, %d samples for testing for each class...", nTrain, nTest));
+    // Split data into training and testing
     GroupedRandomSplitter<String, FImage> splitData =
         new GroupedRandomSplitter<>(dsTraining, nTrain, 0, nTest);
     GroupedDataset<String, ListDataset<FImage>, FImage> training = splitData.getTrainingDataset();
     GroupedDataset<String, ListDataset<FImage>, FImage> testing = splitData.getTestDataset();
 
+    System.out.println("\n[Testing RandomClassifier]");
+    RandomClassifier rc = new RandomClassifier();
+    rc.train(training);
+    testClassifier(rc, testing);
+
+    System.out.println("\n[Testing TinyImageClassifier]");
     TinyImageFeatureExtractor tife = new TinyImageFeatureExtractor(new Dimension(16, 16), true);
     TinyImageClassifier tic = new TinyImageClassifier(20, tife);
-    // RandomClassifier tic = new RandomClassifier();
     tic.train(training);
-
-    int correct = 0;
-    int incorrect = 0;
-    for (Entry<String, ListDataset<FImage>> group : testing.entrySet()) {
-      for (FImage img : group.getValue()) {
-        ClassificationResult<String> result = tic.classify(img);
-        Pair<String, Double> predicted = ClassifierUtilities.getClassification(result);
-        if (group.getKey().equals(predicted.getKey())) {
-          correct++;
-        } else {
-          incorrect++;
-        }
-        Debugger.println(String.format("A: %15s   P: %15s  C: %.02f", group.getKey(),
-            predicted.getKey(), predicted.getValue()));
-      }
-    }
-    System.out.println(String.format("Correct: %d,  Incorrect: %d, Percentage: %.2f%%", correct,
-        incorrect, 100 * correct / (double) incorrect));
+    testClassifier(tic, training);
+    
   }
 
-
+  private static void testClassifier(Classifier<String, FImage> classifier,
+      GroupedDataset<String, ListDataset<FImage>, FImage> testset) {
+    CMAnalyser<FImage, String> analyser = new CMAnalyser<>(CMAnalyser.Strategy.SINGLE);
+    ClassificationEvaluator<CMResult<String>, String, FImage> evaluator =
+        new ClassificationEvaluator<>(classifier, testset, analyser);
+    CMResult<String> result = evaluator.analyse(evaluator.evaluate());
+    System.out.println(result.getDetailReport());
+  }
 
 }
