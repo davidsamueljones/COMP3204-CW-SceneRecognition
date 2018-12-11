@@ -8,7 +8,7 @@
   <name>Scene-Recognition</name>
   <url>http://www.openimaj.org</url>
   <properties>
-    <openimaj.version>1.3.6</openimaj.version>
+	<openimaj.version>1.3.8</openimaj.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
   <dependencies>
