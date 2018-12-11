@@ -16,7 +16,7 @@ import org.openimaj.feature.FloatFV;
  * @author David Jones (dsj1n15@soton.ac.uk)
  * @author Richard Crosland (rtc1g16@soton.ac.uk)
  */
-public class TinyImageFeatureExtractor implements FeatureExtractor<FloatFV, FImage> {
+public class TinyImageFeature implements FeatureExtractor<FloatFV, FImage> {
   public static final Dimension DEFAULT_SCALE = new Dimension(4, 4);
   public static final boolean DEFAULT_NORMALISE = true;
 
@@ -26,7 +26,7 @@ public class TinyImageFeatureExtractor implements FeatureExtractor<FloatFV, FIma
   /**
    * Instantiate a tiny image feature extractor using all class defaults.
    */
-  public TinyImageFeatureExtractor() {
+  public TinyImageFeature() {
     this(DEFAULT_SCALE, DEFAULT_NORMALISE);
   }
 
@@ -36,7 +36,7 @@ public class TinyImageFeatureExtractor implements FeatureExtractor<FloatFV, FIma
    * @param scale Scale for feature extractor to use for tiny image generation
    * @param normalise Whether feature extractor should use normalisation in tiny image generation
    */
-  public TinyImageFeatureExtractor(Dimension scale, boolean normalise) {
+  public TinyImageFeature(Dimension scale, boolean normalise) {
     this.scale = scale;
     this.normalise = normalise;
   }

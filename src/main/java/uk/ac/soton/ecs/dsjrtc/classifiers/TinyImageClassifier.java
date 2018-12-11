@@ -6,7 +6,7 @@ import org.openimaj.experiment.evaluation.classification.ClassificationResult;
 import org.openimaj.feature.FloatFV;
 import org.openimaj.image.FImage;
 import org.openimaj.ml.annotation.basic.KNNAnnotator;
-import uk.ac.soton.ecs.dsjrtc.features.TinyImageFeatureExtractor;
+import uk.ac.soton.ecs.dsjrtc.features.TinyImageFeature;
 import org.openimaj.feature.FloatFVComparison;
 
 /**
@@ -18,7 +18,7 @@ import org.openimaj.feature.FloatFVComparison;
  */
 public class TinyImageClassifier implements TrainableClassifier<String, FImage> {
   public static final int DEFAULT_NN_K = 20;
-  public static final TinyImageFeatureExtractor DEFAULT_FE = new TinyImageFeatureExtractor();
+  public static final TinyImageFeature DEFAULT_FE = new TinyImageFeature();
 
   /** Class nearest neighbour classifier for current training set */
   private final KNNAnnotator<FImage, String, FloatFV> knn;
@@ -47,7 +47,7 @@ public class TinyImageClassifier implements TrainableClassifier<String, FImage> 
    * @param nNeighbours Number of neighbours to consider for classification
    * @param fe Feature extractor to use for classification
    */
-  public TinyImageClassifier(int nNeighbours, TinyImageFeatureExtractor fe) {
+  public TinyImageClassifier(int nNeighbours, TinyImageFeature fe) {
     if (fe == null) {
       throw new IllegalArgumentException("Feature extractor cannot be null");
     }

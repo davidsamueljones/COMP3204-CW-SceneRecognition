@@ -14,7 +14,7 @@ import org.openimaj.image.FImage;
 import org.openimaj.image.ImageUtilities;
 import uk.ac.soton.ecs.dsjrtc.classifiers.RandomClassifier;
 import uk.ac.soton.ecs.dsjrtc.classifiers.TinyImageClassifier;
-import uk.ac.soton.ecs.dsjrtc.features.TinyImageFeatureExtractor;
+import uk.ac.soton.ecs.dsjrtc.features.TinyImageFeature;
 import uk.ac.soton.ecs.dsjrtc.lib.TestingUtilities;
 
 /**
@@ -73,7 +73,7 @@ public class ClassifierTest {
     testClassifier(rc, testing);
 
     System.out.println("\n[Testing TinyImageClassifier]");
-    TinyImageFeatureExtractor tife = new TinyImageFeatureExtractor(new Dimension(16, 16), true);
+    TinyImageFeature tife = new TinyImageFeature(new Dimension(16, 16), true);
     TinyImageClassifier tic = new TinyImageClassifier(20, tife);
     tic.train(training);
     testClassifier(tic, training);
