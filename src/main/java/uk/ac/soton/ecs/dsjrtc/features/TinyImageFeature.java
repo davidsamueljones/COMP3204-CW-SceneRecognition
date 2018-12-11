@@ -3,6 +3,7 @@ package uk.ac.soton.ecs.dsjrtc.features;
 import java.awt.Dimension;
 import org.openimaj.image.FImage;
 import org.openimaj.image.processing.resize.ResizeProcessor;
+import uk.ac.soton.ecs.dsjrtc.lib.FeatureUtilities;
 import org.openimaj.feature.FeatureExtractor;
 import org.openimaj.feature.FloatFV;
 
@@ -60,50 +61,16 @@ public class TinyImageFeature implements FeatureExtractor<FloatFV, FImage> {
     final int dim = Math.min(img.width, img.height);
     img = img.extractCenter(dim, dim);
 
-    // Apply normalisation to image
-    // TODO: Should this be done before crop OR before scale OR right at the end
-    if (normalise) {
-      inplaceNormalise(img);
-    }
-
     // Resize to tiny image scale
     img.processInplace(new ResizeProcessor(scale.width, scale.height));
-
+    // Apply normalisation to image
+    if (normalise) {
+      FeatureUtilities.inplaceNormalise(img);
+    }
+    
     // Pack pixels into vector
     final float[] packed = img.getFloatPixelVector();
     return packed;
-  }
-
-  /**
-   * Inplace normalisation of the input image to account for illumination differences. Achieved by
-   * centring the mean around zero and dividing by the variance.
-   * 
-   * @param img Image to normalise in place
-   * @return Reference to the input image
-   */
-  private static FImage inplaceNormalise(FImage img) {
-    final int pixelCount = img.height * img.width;
-
-    // Calculate mean and variance of the image
-    float sum = 0;
-    float sumsq = 0;
-    for (int y = 0; y < img.height; y++) {
-      for (int x = 0; x < img.width; x++) {
-        final float val = img.pixels[y][x];
-        sum += val;
-        sumsq += val * val;
-      }
-    }
-    final float mean = sum / pixelCount;
-    final float var = sumsq / pixelCount - mean * mean;
-
-    // Remove the mean intensity and scale it by its intensity variance
-    for (int y = 0; y < img.height; y++) {
-      for (int x = 0; x < img.width; x++) {
-        img.pixels[y][x] = (img.pixels[y][x] - mean) / var;
-      }
-    }
-    return img;
   }
 
 }
