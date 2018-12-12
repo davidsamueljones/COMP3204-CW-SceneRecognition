@@ -163,7 +163,7 @@
           </descriptorRefs>
           <archive>
             <manifest>
-              <mainClass>uk.ac.soton.ecs.dsj.App</mainClass>
+              <mainClass>uk.ac.soton.ecs.dsjrtc.ClassifierTest</mainClass>
             </manifest>
           </archive>
         </configuration>
