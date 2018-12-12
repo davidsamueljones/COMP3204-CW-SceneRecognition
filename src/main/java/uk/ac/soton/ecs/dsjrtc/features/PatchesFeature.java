@@ -1,13 +1,13 @@
 package uk.ac.soton.ecs.dsjrtc.features;
 
 import java.awt.Dimension;
-import java.util.ArrayList;
-import java.util.List;
 import org.openimaj.feature.FeatureExtractor;
 import org.openimaj.feature.FloatFV;
 import org.openimaj.feature.local.LocalFeature;
 import org.openimaj.feature.local.LocalFeatureImpl;
 import org.openimaj.feature.local.SpatialLocation;
+import org.openimaj.feature.local.list.LocalFeatureList;
+import org.openimaj.feature.local.list.MemoryLocalFeatureList;
 import org.openimaj.image.FImage;
 import org.openimaj.image.pixel.sampling.RectangleSampler;
 import org.openimaj.math.geometry.shape.Rectangle;
@@ -24,7 +24,7 @@ import uk.ac.soton.ecs.dsjrtc.lib.FeatureUtilities;
  * @author Richard Crosland (rtc1g16@soton.ac.uk)
  */
 public class PatchesFeature
-    implements FeatureExtractor<List<LocalFeature<SpatialLocation, FloatFV>>, FImage> {
+    implements FeatureExtractor<LocalFeatureList<LocalFeature<SpatialLocation, FloatFV>>, FImage> {
   public static int DEFAULT_STEP_X = 4;
   public static int DEFAULT_STEP_Y = 4;
   public static Dimension DEFAULT_WINDOW = new Dimension(8, 8);
@@ -63,7 +63,7 @@ public class PatchesFeature
   }
 
   @Override
-  public List<LocalFeature<SpatialLocation, FloatFV>> extractFeature(FImage object) {
+  public LocalFeatureList<LocalFeature<SpatialLocation, FloatFV>> extractFeature(FImage object) {
     return getPatches(object, window, stepX, stepY);
   }
 
@@ -77,9 +77,10 @@ public class PatchesFeature
    * @param stepY Step size in the Y direction between patches
    * @return A list of patches as positioned feature vectors
    */
-  public static List<LocalFeature<SpatialLocation, FloatFV>> getPatches(FImage img,
+  public static LocalFeatureList<LocalFeature<SpatialLocation, FloatFV>> getPatches(FImage img,
       Dimension window, int stepX, int stepY) {
-    List<LocalFeature<SpatialLocation, FloatFV>> patches = new ArrayList<>();
+    LocalFeatureList<LocalFeature<SpatialLocation, FloatFV>> patches =
+        new MemoryLocalFeatureList<>();
 
     // Generate a list of rectangles to extract as patches
     RectangleSampler rs = new RectangleSampler(img, stepX, stepY, window.width, window.height);

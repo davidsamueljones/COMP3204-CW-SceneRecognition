@@ -12,8 +12,10 @@ import org.openimaj.experiment.evaluation.classification.analysers.confusionmatr
 import org.openimaj.experiment.evaluation.classification.analysers.confusionmatrix.CMResult;
 import org.openimaj.image.FImage;
 import org.openimaj.image.ImageUtilities;
+import uk.ac.soton.ecs.dsjrtc.classifiers.LinearBOVWClassifier;
 import uk.ac.soton.ecs.dsjrtc.classifiers.RandomClassifier;
 import uk.ac.soton.ecs.dsjrtc.classifiers.TinyImageClassifier;
+import uk.ac.soton.ecs.dsjrtc.features.PatchesFeature;
 import uk.ac.soton.ecs.dsjrtc.features.TinyImageFeature;
 import uk.ac.soton.ecs.dsjrtc.lib.TestingUtilities;
 
@@ -78,6 +80,11 @@ public class ClassifierTest {
     tic.train(training);
     testClassifier(tic, training);
     
+    System.out.println("\n[Testing LinearBOVWClassifier]");
+    PatchesFeature patchesFeature = new PatchesFeature();
+    LinearBOVWClassifier lbc = new LinearBOVWClassifier(patchesFeature);
+    lbc.train(training);
+    testClassifier(lbc, training);
   }
 
   private static void testClassifier(Classifier<String, FImage> classifier,
