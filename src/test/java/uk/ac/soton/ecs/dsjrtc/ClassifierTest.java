@@ -59,7 +59,7 @@ public class ClassifierTest {
 
     System.out.println("\n[Training]");
     // As we only know values for the training set use this for both training and testing
-    int nTrain = 100 / 4 * 3;
+    int nTrain = 75;
     int nTest = 100 - nTrain;
     System.out.println(String.format(
         "Using %d samples for training, %d samples for testing for each class...", nTrain, nTest));
@@ -78,13 +78,13 @@ public class ClassifierTest {
     TinyImageFeature tife = new TinyImageFeature(new Dimension(16, 16), true);
     TinyImageClassifier tic = new TinyImageClassifier(20, tife);
     tic.train(training);
-    testClassifier(tic, training);
+    testClassifier(tic, testing);
     
     System.out.println("\n[Testing LinearBOVWClassifier]");
     PatchesFeature patchesFeature = new PatchesFeature();
     LinearBOVWClassifier lbc = new LinearBOVWClassifier(patchesFeature);
     lbc.train(training);
-    testClassifier(lbc, training);
+    testClassifier(lbc, testing);
   }
 
   private static void testClassifier(Classifier<String, FImage> classifier,

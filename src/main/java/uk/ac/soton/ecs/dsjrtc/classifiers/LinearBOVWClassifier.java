@@ -6,6 +6,7 @@ import org.openimaj.data.DataSource;
 import org.openimaj.data.dataset.Dataset;
 import org.openimaj.data.dataset.GroupedDataset;
 import org.openimaj.data.dataset.ListDataset;
+import org.openimaj.experiment.dataset.split.GroupedRandomSplitter;
 import org.openimaj.experiment.evaluation.classification.ClassificationResult;
 import org.openimaj.feature.DoubleFV;
 import org.openimaj.feature.FeatureExtractor;
@@ -38,7 +39,8 @@ import uk.ac.soton.ecs.dsjrtc.lib.Debugger;
  */
 public class LinearBOVWClassifier implements TrainableClassifier<String, FImage> {
   private static final PatchesFeature DEFAULT_PATCHES_FEATURE = new PatchesFeature();
-  private static final float VOCAB_IMAGE_PERCENTAGE = 0.01f;
+  private static final float VOCAB_IMAGE_FEATURE_PERCENTAGE = 0.1f;
+  private static final int VOCAB_IMAGE_COUNT = 10;
   private static final int K_MEANS_CLUSTERS = 500;
   private static final int EXTRACTOR_BLOCKS_X = 2;
   private static final int EXTRACTOR_BLOCKS_Y = 2;
@@ -65,8 +67,6 @@ public class LinearBOVWClassifier implements TrainableClassifier<String, FImage>
     this.patchesFeature = patchesFeature;
   }
 
-
-
   @Override
   public ClassificationResult<String> classify(FImage object) {
     if (annotator == null) {
@@ -80,12 +80,13 @@ public class LinearBOVWClassifier implements TrainableClassifier<String, FImage>
    */
   @Override
   public void train(GroupedDataset<String, ListDataset<FImage>, FImage> trainingSet) {
-    // Create the vocabulary through clustered patch features
-    final HardAssigner<float[], float[], IntFloatPair> vocab = getVocabulary(trainingSet, patchesFeature);
+    // Create the vocabulary through clustered patch features (use a sublist) 
+    GroupedRandomSplitter<String, FImage> split = new GroupedRandomSplitter<>(trainingSet, VOCAB_IMAGE_COUNT, 0, 0);
+    final HardAssigner<float[], float[], IntFloatPair> vocab = getVocabulary(split.getTrainingDataset(), patchesFeature);
     Debugger.println("Making extractor...");
     final FeatureExtractor<DoubleFV, FImage> extractor = new BOVWExtractor(patchesFeature, vocab);
     Debugger.println("Making annotator...");
-    annotator = new LiblinearAnnotator<>(extractor, Mode.MULTILABEL, SolverType.L2R_L2LOSS_SVC, 1.0, 0.00001);
+    annotator = new LiblinearAnnotator<>(extractor, Mode.MULTICLASS, SolverType.L2R_L2LOSS_SVC, 1.0, 0.00001);
     Debugger.println("Training started at: " + LocalDateTime.now() + "...");
     annotator.train(trainingSet);
     Debugger.println("Trained at: " + LocalDateTime.now());
@@ -114,13 +115,16 @@ public class LinearBOVWClassifier implements TrainableClassifier<String, FImage>
     LocalFeatureList<LocalFeature<SpatialLocation, FloatFV>> features =
         new MemoryLocalFeatureList<>();
     Debugger.println("Extracting features...");
+    int totalFeatures = 0;
     for (FImage img : trainingSet) {
-      features.addAll(fe.extractFeature(img));
+      final LocalFeatureList<LocalFeature<SpatialLocation, FloatFV>> localFeatures = fe.extractFeature(img);
+      totalFeatures += localFeatures.size();
+      // Get a reduced random feature list
+      final int featureCount = (int) (localFeatures.size() * VOCAB_IMAGE_FEATURE_PERCENTAGE);
+      features.addAll(localFeatures.randomSubList(featureCount));
     }
-    // Get a reduced random feature list
-    final int featureCount = (int) (features.size() * VOCAB_IMAGE_PERCENTAGE);
-    Debugger.println(String.format("Found %d features, using %d...", features.size(), featureCount));
-    features = new MemoryLocalFeatureList<>(features.randomSubList(featureCount));
+    Debugger.println(String.format("Found %d features, using %d...", totalFeatures, features.size()));
+    
     // Cluster using k-means
     Debugger.println(String.format("Clustering features with %d centroids [%s]...", K_MEANS_CLUSTERS, DateTime.now()));
     FloatKMeans km = FloatKMeans.createKDTreeEnsemble(K_MEANS_CLUSTERS);
