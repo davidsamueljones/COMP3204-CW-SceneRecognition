@@ -29,6 +29,10 @@ public class ClassifierTest {
    * @param args None (ignored)
    */
   public static void main(String[] args) {
+    // ----------------------------------------
+    // DATASET LOADING
+    // ----------------------------------------
+    
     // Load the training and testing datasets
     final String trainingPath = TestingUtilities.getResourcePath("training.zip");
     final String testingPath = TestingUtilities.getResourcePath("testing.zip");
@@ -52,9 +56,9 @@ public class ClassifierTest {
     System.out.println("[Datasets]");
     System.out.println("Training (known classes): " + dsTraining.numInstances());
     System.out.println("Testing (unknown classes): " + dsTesting.numInstances());
-
+    
+    // Get labelled data for both training and verification
     System.out.println("\n[Training]");
-    // As we only know values for the training set use this for both training and testing
     int nTrain = 75;
     int nTest = 100 - nTrain;
     System.out.println(String.format(
@@ -63,27 +67,31 @@ public class ClassifierTest {
     GroupedRandomSplitter<String, FImage> splitData =
         new GroupedRandomSplitter<>(dsTraining, nTrain, 0, nTest);
     GroupedDataset<String, ListDataset<FImage>, FImage> training = splitData.getTrainingDataset();
-    GroupedDataset<String, ListDataset<FImage>, FImage> testing = splitData.getTestDataset();
-
+    GroupedDataset<String, ListDataset<FImage>, FImage> labeledTesting = splitData.getTestDataset();
+    
+    // ----------------------------------------
+    // CLASSIFIER TESTING
+    // ----------------------------------------
     System.out.println("\n[Testing RandomClassifier]");
     RandomClassifier rc = new RandomClassifier();
     rc.train(training);
-    TestingUtilities.evaluateClassifier(rc, testing);
+    TestingUtilities.evaluateClassifier(rc, labeledTesting);
+    TestingUtilities.classifyDataset(dsTesting, rc, true, "run0.txt");
 
     System.out.println("\n[Testing TinyImageClassifier]");
     TinyImageFeature tife = new TinyImageFeature(new Dimension(16, 16), true);
     TinyImageClassifier tic = new TinyImageClassifier(20, tife);
     tic.train(training);
-    TestingUtilities.evaluateClassifier(tic, testing);
+    TestingUtilities.evaluateClassifier(tic, labeledTesting);
+    TestingUtilities.classifyDataset(dsTesting, tic, true, "run1.txt");
 
-     System.out.println("\n[Testing LinearBOVWClassifier]");
-     PatchesFeature patchesFeature = new PatchesFeature();
-     LinearBOVWClassifier lbc = new LinearBOVWClassifier(patchesFeature);
-     lbc.train(training);
-     TestingUtilities.evaluateClassifier(lbc, testing);
+    System.out.println("\n[Testing LinearBOVWClassifier]");
+    PatchesFeature patchesFeature = new PatchesFeature();
+    LinearBOVWClassifier lbc = new LinearBOVWClassifier(patchesFeature);
+    lbc.train(training);
+    TestingUtilities.evaluateClassifier(lbc, labeledTesting);
+    TestingUtilities.classifyDataset(dsTesting, lbc, true, "run2.txt");
   }
-
-
 
 
 
