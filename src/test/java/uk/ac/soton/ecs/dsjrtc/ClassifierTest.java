@@ -6,10 +6,6 @@ import org.openimaj.data.dataset.ListDataset;
 import org.openimaj.data.dataset.VFSGroupDataset;
 import org.openimaj.data.dataset.VFSListDataset;
 import org.openimaj.experiment.dataset.split.GroupedRandomSplitter;
-import org.openimaj.experiment.evaluation.classification.ClassificationEvaluator;
-import org.openimaj.experiment.evaluation.classification.Classifier;
-import org.openimaj.experiment.evaluation.classification.analysers.confusionmatrix.CMAnalyser;
-import org.openimaj.experiment.evaluation.classification.analysers.confusionmatrix.CMResult;
 import org.openimaj.image.FImage;
 import org.openimaj.image.ImageUtilities;
 import uk.ac.soton.ecs.dsjrtc.classifiers.LinearBOVWClassifier;
@@ -72,28 +68,23 @@ public class ClassifierTest {
     System.out.println("\n[Testing RandomClassifier]");
     RandomClassifier rc = new RandomClassifier();
     rc.train(training);
-    testClassifier(rc, testing);
+    TestingUtilities.evaluateClassifier(rc, testing);
 
     System.out.println("\n[Testing TinyImageClassifier]");
     TinyImageFeature tife = new TinyImageFeature(new Dimension(16, 16), true);
     TinyImageClassifier tic = new TinyImageClassifier(20, tife);
     tic.train(training);
-    testClassifier(tic, testing);
-    
-    System.out.println("\n[Testing LinearBOVWClassifier]");
-    PatchesFeature patchesFeature = new PatchesFeature();
-    LinearBOVWClassifier lbc = new LinearBOVWClassifier(patchesFeature);
-    lbc.train(training);
-    testClassifier(lbc, testing);
+    TestingUtilities.evaluateClassifier(tic, testing);
+
+     System.out.println("\n[Testing LinearBOVWClassifier]");
+     PatchesFeature patchesFeature = new PatchesFeature();
+     LinearBOVWClassifier lbc = new LinearBOVWClassifier(patchesFeature);
+     lbc.train(training);
+     TestingUtilities.evaluateClassifier(lbc, testing);
   }
 
-  private static void testClassifier(Classifier<String, FImage> classifier,
-      GroupedDataset<String, ListDataset<FImage>, FImage> testset) {
-    CMAnalyser<FImage, String> analyser = new CMAnalyser<>(CMAnalyser.Strategy.SINGLE);
-    ClassificationEvaluator<CMResult<String>, String, FImage> evaluator =
-        new ClassificationEvaluator<>(classifier, testset, analyser);
-    CMResult<String> result = evaluator.analyse(evaluator.evaluate());
-    System.out.println(result.getDetailReport());
-  }
+
+
+
 
 }
