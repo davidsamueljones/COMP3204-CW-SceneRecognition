@@ -1,4 +1,4 @@
-package uk.ac.soton.ecs.dsjrtc.classifiers;
+package uk.ac.soton.ecs.dsjrtc.lib;
 
 import org.openimaj.data.dataset.GroupedDataset;
 import org.openimaj.data.dataset.ListDataset;

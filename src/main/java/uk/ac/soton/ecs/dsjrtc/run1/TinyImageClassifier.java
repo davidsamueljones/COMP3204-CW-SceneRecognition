@@ -1,4 +1,4 @@
-package uk.ac.soton.ecs.dsjrtc.classifiers;
+package uk.ac.soton.ecs.dsjrtc.run1;
 
 import org.openimaj.data.dataset.GroupedDataset;
 import org.openimaj.data.dataset.ListDataset;
@@ -6,7 +6,7 @@ import org.openimaj.experiment.evaluation.classification.ClassificationResult;
 import org.openimaj.feature.FloatFV;
 import org.openimaj.image.FImage;
 import org.openimaj.ml.annotation.basic.KNNAnnotator;
-import uk.ac.soton.ecs.dsjrtc.features.TinyImageFeature;
+import uk.ac.soton.ecs.dsjrtc.lib.TrainableClassifier;
 import org.openimaj.feature.FloatFVComparison;
 
 /**

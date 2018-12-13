@@ -1,4 +1,4 @@
-package uk.ac.soton.ecs.dsjrtc.features;
+package uk.ac.soton.ecs.dsjrtc.run2;
 
 import java.awt.Dimension;
 import org.openimaj.feature.FeatureExtractor;

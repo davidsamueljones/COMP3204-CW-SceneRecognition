@@ -1,4 +1,4 @@
-package uk.ac.soton.ecs.dsjrtc.classifiers;
+package uk.ac.soton.ecs.dsjrtc.lib;
 
 import java.util.ArrayList;
 import java.util.HashSet;

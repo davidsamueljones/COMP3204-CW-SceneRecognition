@@ -8,12 +8,12 @@ import org.openimaj.data.dataset.VFSListDataset;
 import org.openimaj.experiment.dataset.split.GroupedRandomSplitter;
 import org.openimaj.image.FImage;
 import org.openimaj.image.ImageUtilities;
-import uk.ac.soton.ecs.dsjrtc.classifiers.LinearBOVWClassifier;
-import uk.ac.soton.ecs.dsjrtc.classifiers.RandomClassifier;
-import uk.ac.soton.ecs.dsjrtc.classifiers.TinyImageClassifier;
-import uk.ac.soton.ecs.dsjrtc.features.PatchesFeature;
-import uk.ac.soton.ecs.dsjrtc.features.TinyImageFeature;
+import uk.ac.soton.ecs.dsjrtc.lib.RandomClassifier;
 import uk.ac.soton.ecs.dsjrtc.lib.TestingUtilities;
+import uk.ac.soton.ecs.dsjrtc.run1.TinyImageClassifier;
+import uk.ac.soton.ecs.dsjrtc.run1.TinyImageFeature;
+import uk.ac.soton.ecs.dsjrtc.run2.LinearBOVWClassifier;
+import uk.ac.soton.ecs.dsjrtc.run2.PatchesFeature;
 
 /**
  * Test application for image classification.

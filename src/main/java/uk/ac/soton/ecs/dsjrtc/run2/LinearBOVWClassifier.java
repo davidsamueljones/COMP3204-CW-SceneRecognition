@@ -1,4 +1,4 @@
-package uk.ac.soton.ecs.dsjrtc.classifiers;
+package uk.ac.soton.ecs.dsjrtc.run2;
 
 import org.openimaj.data.DataSource;
 import org.openimaj.data.dataset.Dataset;
@@ -25,8 +25,8 @@ import org.openimaj.ml.clustering.assignment.HardAssigner;
 import org.openimaj.ml.clustering.kmeans.FloatKMeans;
 import org.openimaj.util.pair.IntFloatPair;
 import de.bwaldvogel.liblinear.SolverType;
-import uk.ac.soton.ecs.dsjrtc.features.PatchesFeature;
 import uk.ac.soton.ecs.dsjrtc.lib.Debugger;
+import uk.ac.soton.ecs.dsjrtc.lib.TrainableClassifier;
 
 /**
  * Classifier that uses a linear classifier for annotation, with features extracted from a bag of
@@ -43,7 +43,7 @@ public class LinearBOVWClassifier implements TrainableClassifier<String, FImage>
   // Vocabulary modifiers
   private static final float VOCAB_IMAGE_PERCENT = 0.2f;
   private static final float VOCAB_IMAGE_FEATURE_PERCENTAGE = 1.0f;
-  private static final int K_MEANS_CLUSTERS = 2000;
+  private static final int K_MEANS_CLUSTERS = 500;
   // Aggregator modifiers
   private static final int EXTRACTOR_BLOCKS_X = 2;
   private static final int EXTRACTOR_BLOCKS_Y = 2;
