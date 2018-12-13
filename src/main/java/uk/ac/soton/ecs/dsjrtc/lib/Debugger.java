@@ -58,7 +58,7 @@ public class Debugger {
   public static void print(Object obj) {
     if (Debugger.isOutputEnabled()) {
       if (Debugger.isTimeOutput()) {
-        System.out.print(String.format("[%s]", Debugger.getTime()));
+        System.out.print(String.format("[%s] ", Debugger.getTime()));
       }
       System.out.print(obj.toString());
     }
